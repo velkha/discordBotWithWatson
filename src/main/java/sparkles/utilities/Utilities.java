@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sparkles.models.ReturnApiJsonObject;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
@@ -25,20 +26,30 @@ public class Utilities {
      * @param fileURL direccion del archivo del recurso
      * @return valor del recurso (value)
      */
-    public String getResource(String resourceName, String fileURL){
+    public String getResource(String resourceName, String propFileName)  {
         String recurso;
         Properties prop = new Properties();
-        try(InputStream input = getClass().getClassLoader().getResourceAsStream(fileURL)){
+
+        try(InputStream input = getClass().getClassLoader().getResourceAsStream(propFileName)){
             if(input!=null){
+
+                LOGGER.warn("Recurso Encontrado.\nNombre recurso: "+resourceName+"\nFilePath: "+propFileName);
                 prop.load(input);
-                recurso=prop.getProperty("resourceName");
+                System.out.println(java.util.Arrays.asList(prop.propertyNames()));
+
+                for(Object k:prop.keySet()){
+                    String key = (String)k;
+                    System.out.println(key+": "+prop.getProperty(key));
+                }
+
+                recurso=prop.getProperty(resourceName);
             }
             else{
-                LOGGER.warn("Recurso no encontrado.\nNombre recurso: "+resourceName+"\nFilePath: "+fileURL);
+                LOGGER.warn("Recurso no encontrado.\nNombre recurso: "+resourceName+"\nFilePath: "+propFileName);
                 recurso=null;
             }
         }catch(IOException ie){
-            LOGGER.warn("Error durante la busqueda del recurso.\nNombre recurso: "+resourceName+"\nFilePath: "+fileURL);
+            LOGGER.warn("Error durante la busqueda del recurso.\nNombre recurso: "+resourceName+"\nFilePath: "+propFileName);
             LOGGER.warn("Excepcion:\n"+ie.getMessage());
             ie.printStackTrace();
             recurso=null;

@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sparkles.events.listeners.MessageListener;
 import sparkles.events.listeners.ReadyListener;
+import sparkles.utilities.Utilities;
 import sparkles.watson.models.WatsonAssistant;
 
 import javax.security.auth.login.LoginException;
@@ -15,6 +16,8 @@ public class DiscordBotController {
     private static final Logger LOGGER = LoggerFactory.getLogger(DiscordBotController.class);
     public static void main(String[] args) {
         //WatsonAssistant wa = new WatsonAssistant();
+        test();
+
         try {
             DiscordBotController.startBot();
 
@@ -22,9 +25,15 @@ public class DiscordBotController {
             throw new RuntimeException(e);
         }
     }
+
+    private static void test() {
+
+    }
+
     public static void startBot() throws LoginException {
         LOGGER.info("Comenzando creacion del bot");
-        JDA bot = JDABuilder.createDefault("OTgxNjM0NTk5NTA5Njk2NTIz.GeHIpw.SvMx_gYIL-eRKkoQtcrIEYwg7C20zhOX1WNKrc").setActivity(Activity.playing("with some unicorns in the rainbow")).build();
+        Utilities utils = new Utilities();
+        JDA bot = JDABuilder.createDefault(utils.getResource("sparkles.token", "SparklesConfig.properties")).setActivity(Activity.playing("with some unicorns in the rainbow")).build();
         MessageController mc = new MessageController();
         ReadyController rc = new ReadyController();
         bot.addEventListener(new MessageListener(mc));
