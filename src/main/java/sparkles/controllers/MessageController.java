@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class MessageController {
-    private static Logger LOGGER = LoggerFactory.getLogger(MessageController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MessageController.class);
     public void processMessage(MessageReceivedEvent event){
 
         boolean isBot = event.getAuthor().isBot();

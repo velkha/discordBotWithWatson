@@ -1,14 +1,6 @@
-{"commands": [{
-    "name": "alpaca",
-    "response": "jesucristo"
-  },
-  {
-    "name": "unicornio",
-    "response": "arcoiris"
-  },
-  {
-    "name": "nada",
-    "response": "patata"
-  }
-]}
+{
+  "alpaca": "jesucristo",
+  "unicornio": "arcoiris",
+  "nada": "patata"
+}
 

@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sparkles.models.ReturnApiJsonObject;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
@@ -20,10 +19,13 @@ import java.util.Properties;
 public class Utilities {
     private static final Logger LOGGER = LoggerFactory.getLogger(Utilities.class);
 
+
+
+
     /**
      * Devuelve el valor del recurso en un archivo .properties
      * @param resourceName nombre del recurso (key)
-     * @param fileURL direccion del archivo del recurso
+     * @param propFileName direccion del archivo del recurso
      * @return valor del recurso (value)
      */
     public String getResource(String resourceName, String propFileName)  {
@@ -35,13 +37,6 @@ public class Utilities {
 
                 LOGGER.warn("Recurso Encontrado.\nNombre recurso: "+resourceName+"\nFilePath: "+propFileName);
                 prop.load(input);
-                System.out.println(java.util.Arrays.asList(prop.propertyNames()));
-
-                for(Object k:prop.keySet()){
-                    String key = (String)k;
-                    System.out.println(key+": "+prop.getProperty(key));
-                }
-
                 recurso=prop.getProperty(resourceName);
             }
             else{
@@ -59,33 +54,32 @@ public class Utilities {
 
     /**
      * Convierte un json en un Map
-     * @param jsonStr
-     * @return
+     * @param jsonStr json a convertir en map
+     * @return devuelve un map del json indicado
+     *
      */
-    public Map<String, Object> jsonToMapKV(String jsonStr) {
+    public Map<String, ?> jsonToMapKV(String jsonStr) {
         Gson gson = new Gson();
-        Type strObjgMap=new TypeToken<Map<String, Object>>(){}.getType();
-        Map<String, Object>map=gson.fromJson(jsonStr, strObjgMap);
-        return map;
+        Type strObjgMap=new TypeToken<Map<String, ?>>(){}.getType();
+        return gson.fromJson(jsonStr, strObjgMap);
     }
 
     /**
      * Convierte un json con formato de array en un list
-     * @param json
-     * @return
+     * @param json a convertir en lista
+     * @return devuelve la lista creada a traves del json otorgado
      */
     public List<String> jsonToStrList(String json){
         Gson gson = new Gson();
         Type strObjList=new TypeToken<List<String>>(){}.getType();
-        List<String> list = gson.fromJson(json, strObjList);
-        return list;
+        return gson.fromJson(json, strObjList);
 
     }
 
     /**
      * Transformacion estandar de json en objeto
-     * @param object
-     * @return
+     * @param object objecto a transformar en json
+     * @return valor en json del objeto
      */
     public String toJson(Object object) {
         Gson gson = new GsonBuilder().create();
@@ -95,7 +89,7 @@ public class Utilities {
     /**
      * Genera un json con datos de error para enviar a apis que exijen formato json
      * @param errorCode valor del error
-     * @return
+     * @return string con el error en formato json para sistemas que solo aceptan json
      */
     public String generateErrorData(String errorCode) {
         ReturnApiJsonObject rbo = new ReturnApiJsonObject(1);
@@ -105,15 +99,14 @@ public class Utilities {
 
     /**
      * Devuelve el valor de un objeto concreto dentro de un json
-     * @param json
-     * @param dataName
-     * @return
+     * @param json json en el que se encuentra el valor a buscar
+     * @param dataName nombre del valor a buscar
+     * @return valor pedido
      */
-    public String getDataFromJson(String json, String dataName) {
+    public Object getDataFromJson(String json, String dataName) {
         JsonObject obj = JsonParser.parseString(json).getAsJsonObject();
-        String test = obj.get(dataName).toString();
         Object objs = obj.get(dataName);
-        LOGGER.debug("Valor json -> "+test);
-        return test;
+        LOGGER.debug("Valor json -> "+obj);
+        return objs;
     }
 }
