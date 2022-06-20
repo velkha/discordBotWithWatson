@@ -2,11 +2,7 @@ package sparkles.ddbb;
 
 import sparkles.models.QueryExtras;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +64,19 @@ public class GestorDDBB {
 	public final void crearConexion() throws SQLException, NamingException {
 		crearConexion(pool, true);
 	}
+
+	/**
+	 * Crea conexion de BBDD
+	 *
+	 * @param url
+	 * @param user
+	 * @param password
+	 * @throws SQLException
+	 */
+	public void createDatabaseConnectionWithoutPool(String url, String user, String password) throws SQLException {
+		conexion = DriverManager.getConnection(url, user, password);
+	}
+
 	/**
 	 * Cierra la conexion con la bbdd
 	 */

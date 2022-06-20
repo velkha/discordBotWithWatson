@@ -109,4 +109,12 @@ public class Utilities {
         LOGGER.debug("Valor json -> "+obj);
         return objs;
     }
+
+    public String getSingleDataFromJson(String json, String dataName) {
+        JsonObject obj = JsonParser.parseString(json).getAsJsonObject();
+        String objs = obj.get(dataName).getAsString();
+        LOGGER.debug("Valor json -> "+obj);
+        return objs;
+    }
+
 }
