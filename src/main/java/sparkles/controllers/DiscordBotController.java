@@ -5,23 +5,39 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sparkles.ddbb.GestorDDBB;
 import sparkles.events.listeners.MessageListener;
 import sparkles.events.listeners.ReadyListener;
 import sparkles.utilities.Utilities;
 
+import javax.naming.NamingException;
 import javax.security.auth.login.LoginException;
+import java.sql.SQLException;
 
 public class DiscordBotController {
     private static final Logger LOGGER = LoggerFactory.getLogger(DiscordBotController.class);
     public static void main(String[] args) {
         //WatsonAssistant wa = new WatsonAssistant();
-        botInit();
+        //botInit();
+        botTest();
+    }
 
+    private static void botTest() {
+
+        GestorDDBB gestorDDBB = new GestorDDBB();
+        try {
+            gestorDDBB.crearConexion();
+            gestorDDBB.cerrarConexion();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (NamingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
-
     public static void botInit(){
+
         try {
             DiscordBotController.startBot();
 

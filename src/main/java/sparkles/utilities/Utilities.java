@@ -20,8 +20,6 @@ public class Utilities {
     private static final Logger LOGGER = LoggerFactory.getLogger(Utilities.class);
 
 
-
-
     /**
      * Devuelve el valor del recurso en un archivo .properties
      * @param resourceName nombre del recurso (key)
@@ -115,6 +113,14 @@ public class Utilities {
         String objs = obj.get(dataName).getAsString();
         LOGGER.debug("Valor json -> "+obj);
         return objs;
+    }
+
+    public Properties getProperties(String fileName) throws IOException {
+        Properties properties;
+        properties = new Properties();
+        properties.load(getClass().getClassLoader().getResourceAsStream(fileName+".properties"));
+        return properties;
+
     }
 
 }

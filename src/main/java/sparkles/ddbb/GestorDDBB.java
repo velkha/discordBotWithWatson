@@ -1,11 +1,17 @@
 package sparkles.ddbb;
 
+import org.apache.commons.pool.ObjectPool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sparkles.models.QueryExtras;
+import sparkles.utilities.Utilities;
 
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -16,36 +22,35 @@ import javax.sql.rowset.RowSetFactory;
 import javax.sql.rowset.RowSetProvider;
 
 public class GestorDDBB {
-	
+	private static final Logger LOGGER = LoggerFactory.getLogger(GestorDDBB.class);
 	private Connection conexion;
+
 	@SuppressWarnings("unused")
 	private Statement stmt;
 	private PreparedStatement pstmt;
 	private CachedRowSet crs;
-	private Context envCtx;
-	private static String pool = "DNDIBERIA_BD";
-	
+	private static String url = "jdbc:mysql://localhost:3306/sparklesddbb";
+	private static Properties connectionProperties;
 	/**
 	 * Crea una conexion con la BBDD en la pool seleccionada
-	 * @param sPool nombre de la pool
+	 * @param url nombre de la url
 	 * @param valor autocomit
 	 * @throws SQLException
 	 * @throws NamingException
 	 */
-	public final void crearConexion(String sPool, boolean valor) throws SQLException, NamingException {
-		envCtx = new InitialContext();
-		DataSource ds = (javax.sql.DataSource) envCtx.lookup(sPool);
-		conexion = ds.getConnection();
+	public final void crearConexion(String url, boolean valor, Properties properties) throws SQLException, NamingException {
+		connectionProperties = properties;
+		conexion = DriverManager.getConnection(url, connectionProperties);
 		conexion.setAutoCommit(valor);
 	}
 	/**
 	 * Crea una conexion con autocomit a la pool seleccionada
-	 * @param sPool
+	 * @param url
 	 * @throws SQLException
 	 * @throws NamingException
 	 */
-	public final void crearConexion(String sPool) throws SQLException, NamingException {
-		crearConexion(sPool, true);
+	public final void crearConexion(String url) throws SQLException, NamingException {
+		crearConexion(url, true, this.generateConnProperties());
 	}
 	/**
 	 * Crea una conexion a la pool estandar 
@@ -54,7 +59,7 @@ public class GestorDDBB {
 	 * @throws NamingException
 	 */
 	public final void crearConexion(boolean valor) throws SQLException, NamingException {
-		crearConexion(pool, valor);
+		crearConexion(url, valor, this.generateConnProperties());
 	}
 	/**
 	 * Crea una conexion estandar
@@ -62,19 +67,38 @@ public class GestorDDBB {
 	 * @throws NamingException
 	 */
 	public final void crearConexion() throws SQLException, NamingException {
-		crearConexion(pool, true);
+		crearConexion(url, true, this.generateConnProperties());
 	}
 
 	/**
-	 * Crea conexion de BBDD
-	 *
+	 * 
 	 * @param url
 	 * @param user
 	 * @param password
+	 * @param autocomit
 	 * @throws SQLException
+	 * @throws NamingException
 	 */
-	public void createDatabaseConnectionWithoutPool(String url, String user, String password) throws SQLException {
-		conexion = DriverManager.getConnection(url, user, password);
+	public final void crearConexion(String url, String user, String password, boolean autocomit) throws SQLException, NamingException {
+		crearConexion(url, true, this.generateConnProperties(user, password));
+	}
+	private Properties generateConnProperties(){
+		Properties properties;
+		try {
+			properties = new Utilities().getProperties("connection");
+		} catch (IOException e) {
+			LOGGER.error("Error buscando el recurso que contiene las credenciales para conectar a la BBDD");
+			properties = new Properties();
+			properties.put("user", null);
+			properties.put("password", null);
+		}
+		return properties;
+	}
+	private Properties generateConnProperties(String user, String password){
+		Properties properties = new Properties();
+		properties.put("user", user);
+		properties.put("password", password);
+		return properties;
 	}
 
 	/**
