@@ -4,13 +4,11 @@ import java.util.*;
 import java.util.stream.Stream;
 
 /**
- * A simple spell checker based on a few implementations such as the infamous Peter Noving spell checker and
- * the like. Attempts to be highly performing by never changing the first character since we can assume that the
- * user got that correct.
+ * Corrector por proximidad a la palabra
  */
 public class SpellingCorrector implements ISpellingCorrector {
 
-    // word to count map - how may times a word is present - or a weight attached to a word
+
     private Map<String, Integer> dictionary = null;
 
     public SpellingCorrector(int lruCount) {
@@ -36,7 +34,7 @@ public class SpellingCorrector implements ISpellingCorrector {
 
         word = word.toLowerCase();
 
-        // If the word exists in our dictionary then return
+        // Si la palabra existe no hacemos nada
         if (dictionary.containsKey(word)) {
             return word;
         }
@@ -51,10 +49,10 @@ public class SpellingCorrector implements ISpellingCorrector {
         }
 
         if (!possibleMatches.isEmpty()) {
-            // Sorted least likely first
+            // Menos posibles primero
             Object[] matches = this.sortByValue(possibleMatches).keySet().toArray();
 
-            // Try to match anything of the same length first
+            // Buscamos por mismo tamaño de palabra
             String bestMatch = "";
             for(Object o: matches) {
                 if (o.toString().length() == word.length()) {
@@ -66,12 +64,12 @@ public class SpellingCorrector implements ISpellingCorrector {
                 return bestMatch;
             }
 
-            // Just return whatever is the best match
+            // Devolvemos el mejor resultado
             return matches[matches.length - 1].toString();
         }
 
-        // Ok we did't find anything, so lets run the edits function on the previous results and use those
-        // this gives us results which are 2 characters away from whatever was entered
+        // No hemos encontrado nada por lo que procedemos a realizar la busqueda con el wordedits
+        // y mostramos los resultados posibles
         List<String> furtherEdits = new ArrayList<>();
         for(String closeEdit: closeEdits) {
             furtherEdits.addAll(this.wordEdits(closeEdit));
@@ -84,10 +82,10 @@ public class SpellingCorrector implements ISpellingCorrector {
         }
 
         if (!possibleMatches.isEmpty()) {
-            // Sorted least likely first
+            // Ordenamos los posible matches
             Object[] matches = this.sortByValue(possibleMatches).keySet().toArray();
 
-            // Try to match anything of the same length first
+            // Trata de conseguir primero algo con el mismo tamanio de palabra
             String bestMatch = "";
             for(Object o: matches) {
                 if (o.toString().length() == word.length()) {
@@ -99,7 +97,7 @@ public class SpellingCorrector implements ISpellingCorrector {
                 return bestMatch;
             }
 
-            // Just return whatever is the best match
+            // Devuelve el mejor resultado
             return matches[matches.length - 1].toString();
         }
 
@@ -119,9 +117,7 @@ public class SpellingCorrector implements ISpellingCorrector {
 
 
     /**
-     * Return a list of strings which are words similar to our one which could potentially be misspellings
-     * Abuse the fact that a char can be used as an integer
-     * Assume that they got the first letter correct for all edits to cut on CPU burn time
+     * Suponemos que la primera letra de la palabra es correcta para devolver las posibles palabras correctas
      */
     public List<String> wordEdits(String word) {
         List<String> closeWords = new ArrayList<String>();
@@ -154,7 +150,7 @@ public class SpellingCorrector implements ISpellingCorrector {
 
 
     /**
-     * Sorts a map by value taken from
+     * Ordenamos segun el valor que recogemos del map
      */
     public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue( Map<K, V> map ) {
         Map<K, V> result = new LinkedHashMap<>();
@@ -164,10 +160,6 @@ public class SpellingCorrector implements ISpellingCorrector {
 
         return result;
     }
-
-    /**
-     * A very simple LRU cache implementation that can be used for random data types.
-     */
     public class LruCache<A, B> extends LinkedHashMap<A, B> {
         private final int maxEntries;
 
