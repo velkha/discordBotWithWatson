@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.entities.Activity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sparkles.ddbb.GestorDDBB;
+import sparkles.events.listeners.ChannelListener;
 import sparkles.events.listeners.MessageListener;
 import sparkles.events.listeners.ReadyListener;
 import sparkles.utilities.Utilities;
@@ -18,8 +19,8 @@ public class DiscordBotController {
     private static final Logger LOGGER = LoggerFactory.getLogger(DiscordBotController.class);
     public static void main(String[] args) {
         //WatsonAssistant wa = new WatsonAssistant();
-        //botInit();
-        botTest();
+        botInit();
+        //botTest();
     }
 
     private static void botTest() {
@@ -51,8 +52,10 @@ public class DiscordBotController {
         JDA bot = JDABuilder.createDefault(utils.getResource("sparkles.token", "sparklesConfig.properties")).setActivity(Activity.playing(utils.getResource("sparkles.action", "SparklesConfig.properties"))).build();
         MessageController mc = new MessageController();
         ReadyController rc = new ReadyController();
+        ChannelController cc = new ChannelController();
         bot.addEventListener(new MessageListener(mc));
         bot.addEventListener(new ReadyListener(rc));
+        bot.addEventListener(new ChannelListener(cc));
         LOGGER.info("Bot iniciado\n"+"Directorio: "+System.getProperty("user.dir")+"\nHome: "+System.getProperty("user.home"));
     }
 }

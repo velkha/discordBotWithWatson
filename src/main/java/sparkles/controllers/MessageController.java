@@ -47,6 +47,8 @@ public class MessageController {
         Message message = event.getMessage();
         MessageChannel channel = event.getChannel();
         String msg = message.getContentDisplay();
+
+
         channel.sendMessage("No me moleste porfavor, estoy pensando en alpacas magicas multicolores").queue();
     }
 
